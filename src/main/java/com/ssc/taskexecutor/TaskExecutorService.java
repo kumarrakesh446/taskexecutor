@@ -11,7 +11,6 @@ import java.util.concurrent.locks.ReentrantLock;
 public class TaskExecutorService implements Main.TaskExecutor {
     private ExecutorService executorService;
     private Map<Main.TaskGroup, ReentrantLock> groupLockMap = new HashMap<>();
-    private ReentrantLock sequence = new ReentrantLock(true);
 
     public TaskExecutorService() {
         executorService = Executors.newFixedThreadPool(5);
@@ -20,7 +19,7 @@ public class TaskExecutorService implements Main.TaskExecutor {
     @Override
     public <T> Future<Main.TaskResult<T>> submitTask(Main.Task<T> task) {
 
-        ReentrantLock lock = groupLockMap.computeIfAbsent(task.taskGroup(), k -> new ReentrantLock());
+        ReentrantLock lock = groupLockMap.computeIfAbsent(task.taskGroup(), k -> new ReentrantLock(true));
 
 
         return executorService.submit(() -> {
